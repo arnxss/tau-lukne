@@ -6,19 +6,30 @@
     <title>Klausimas Luknei ❤️</title>
     <style>
         body { font-family: 'Georgia', serif; background-color: #fff0f3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; overflow: hidden; }
-        .card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2); max-width: 400px; width: 85%; border: 2px solid #ffccd5; position: relative; z-index: 5; }
+        .card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2); max-width: 400px; width: 85%; border: 2px solid #ffccd5; position: relative; }
         h1 { color: #c9184a; font-size: 1.8rem; margin-bottom: 10px; }
         p { font-size: 1.1rem; color: #594146; line-height: 1.5; }
-        .buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; align-items: center; min-height: 150px; }
+        
+        .buttons-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-top: 30px; 
+            gap: 20px; /* Sukuria tarpą tarp mygtukų */
+            min-height: 140px; 
+        }
         
         button { width: 100%; max-width: 200px; padding: 12px; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: bold; }
         
-        /* Teigiamas mygtukas visada turi būti matomas ir viršuje */
-        .yes { background-color: #ff4d6d; color: white; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4); position: relative; z-index: 100; transition: transform 0.1s; }
-        .yes:active { transform: scale(0.95); }
-
-        /* Neigiamas mygtukas */
-        .no { background-color: #f8f9fa; color: #a4161a; border: 1px solid #ffccd5; position: absolute; transition: 0.1s ease; z-index: 10; }
+        .yes { background-color: #ff4d6d; color: white; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4); position: relative; z-index: 1; }
+        
+        .no { 
+            background-color: #f8f9fa; 
+            color: #a4161a; 
+            border: 1px solid #ffccd5; 
+            position: relative; /* Pradžioje stovi savo vietoje */
+            transition: 0.1s ease; 
+        }
         
         .hidden { display: none; }
         .heart { font-size: 2rem; margin-bottom: 10px; }
@@ -30,7 +41,7 @@
     <div class="heart">❤️</div>
     <h1>Lukne...</h1>
     <p>Ar Jūs esate <strong>Arno</strong> Valentinè?</p>
-    <div class="buttons">
+    <div class="buttons-container">
         <button class="yes" onclick="nextStep(2)">Taip</button>
         <button class="no" id="no1" onmouseover="moveButton('no1')" onclick="moveButton('no1')">Ne</button>
     </div>
@@ -39,7 +50,7 @@
 <div class="card hidden" id="step2">
     <h1>Jūs gavote kvietimą! 💌</h1>
     <p>Ar norėtumėte jį priimti?</p>
-    <div class="buttons">
+    <div class="buttons-container">
         <button class="yes" onclick="nextStep(3)">Priimti</button>
         <button class="no" id="no2" onmouseover="moveButton('no2')" onclick="moveButton('no2')">Atmesti</button>
     </div>
@@ -56,26 +67,25 @@
 
 <script>
     function nextStep(step) {
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('step3').classList.add('hidden');
+        document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
         document.getElementById('step' + step).classList.remove('hidden');
     }
 
     function moveButton(id) {
         const btn = document.getElementById(id);
-        // Mygtukas pabėga į bet kurią ekrano vietą, bet ne po "Taip" mygtuku
+        // Vos tik pajuda, mygtukas tampa "fixed", kad galėtų keliauti per visą ekraną
+        btn.style.position = 'fixed';
+        
         const x = Math.random() * (window.innerWidth - btn.clientWidth - 50);
         const y = Math.random() * (window.innerHeight - btn.clientHeight - 50);
         
-        btn.style.position = 'fixed';
         btn.style.left = x + 'px';
         btn.style.top = y + 'px';
     }
 
-    // Blokavimas telefonams
     const blockTouch = (id) => {
-        document.getElementById(id).addEventListener('touchstart', function(e) {
+        const btn = document.getElementById(id);
+        btn.addEventListener('touchstart', function(e) {
             e.preventDefault();
             moveButton(id);
         }, {passive: false});
